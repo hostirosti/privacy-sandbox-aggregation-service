@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - ls -la /root/.cache/bazel/
+      - ls -la /workspace/.bazel/
+  build:
+    commands:
+      - echo Bazel Build started on `date`
+      - bazel run -c opt tools:browser_simulator_image_publish --stamp --define VERSION=$BUILD_ID --define TAG=latest --define REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com --define REPOSITORY=build-demo
+      - bazel run -c opt service:collector_server_image_publish --stamp --define VERSION=$BUILD_ID --define TAG=latest --define REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com --define REPOSITORY=build-demo
+      - bazel run -c opt service:aggregator_server_image_publish --stamp --define VERSION=$BUILD_ID --define TAG=latest --define REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com --define REPOSITORY=build-demo
+      - bazel run -c opt service:aggregator_server_debug_image_publish --stamp --define VERSION=$BUILD_ID --define TAG=latest --define REGISTRY=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com --define REPOSITORY=build-demo
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - ls -la /root/.cache/bazel/_bazel_root/
+      - ls -la /workspace/.bazel/
+
+cache:
+  paths:
+    - '/workspace/.bazel/**/*'
+    - '/root/.cache/bazel/**/*'
