@@ -80,7 +80,7 @@ container_image(
     creation_time = "{BUILD_TIMESTAMP}",
     entrypoint = ["/collector_server"],
     files = [":collector_server"],
-    stamp = True,
+    stamp = 1,
 )
 
 container_push(
@@ -145,8 +145,9 @@ container_image(
     files = [
         ":aggregator_server",
         "//pipeline:dpf_aggregate_partial_report_pipeline",
+        "//pipeline:dpf_aggregate_reach_partial_report_pipeline",
     ],
-    stamp = True,
+    stamp = 1,
 )
 
 container_push(
@@ -167,7 +168,7 @@ container_image(
         ":aggregator_server",
         "//pipeline:dpf_aggregate_partial_report_pipeline",
     ],
-    stamp = True,
+    stamp = 1,
 )
 
 container_push(
@@ -204,7 +205,7 @@ container_image(
         ":aggregator_server_static",
         "//pipeline:dpf_aggregate_partial_report_pipeline_static",
     ],
-    stamp = True,
+    stamp = 1,
 )
 
 go_library(
